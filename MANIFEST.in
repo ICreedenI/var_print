@@ -1,0 +1,7 @@
+include README.md
+include LICENSE
+graft var_printer
+recursive-exclude * *.py[co]
+include versioneer.py
+include var_printer/_version.py
+include var_printer/data/color_schemes.pickle
