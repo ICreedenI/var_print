@@ -14,7 +14,7 @@ But you are not bound to this color scheme. There are a few stored in the color_
 - Planned
 
 ## Installation
-`pip install var-printer`
+`pip install var-print`
 
 ## Usage
 ### Normal usage
