@@ -1,6 +1,7 @@
 import inspect
 import os
 import pickle
+import datetime
 from pathlib import Path
 from pprint import pformat
 from textwrap import dedent
@@ -8,6 +9,20 @@ from types import GeneratorType
 
 import executing
 from colorful_terminal import *
+
+
+def aktuelle_Zeit():
+    zeit = datetime.datetime.now()
+    tag = zeit.strftime("%d")
+    monat = zeit.strftime("%m")
+    jahr = zeit.strftime("%Y")
+    stunde = zeit.strftime("%H")
+    min = zeit.strftime("%M")
+    sek = zeit.strftime("%S")
+
+    datum_uhrzeit = str(f"{tag}.{monat}.{jahr}-{stunde}.{min}.{sek}")
+
+    return datum_uhrzeit
 
 
 def pickle_pack(data, path, append=False):
@@ -284,15 +299,17 @@ class VariableNameAndValuePrinter:
 
             kwargs = {k: vars[i] for (i, k) in enumerate(var_names)}
 
-            out = self.format_vars_and_args(kwargs)
+            if len(kwargs) > 0:
+                out = self.format_vars_and_args(kwargs)
+            else:
+                out = f"Testing varp: {Fore.CYAN} date and time: {Fore.get_rainbow_string(aktuelle_Zeit())}"
 
-            # test_path = r"C:\Users\Creed\OneDrive\Schul-Dokumente\Programmieren\Python\Code Sammlung\python_class_classics\printer\var_printer\test.txt"
-            # with open(test_path, "a") as f:
-            #     f.write(out)
-            #     f.write("\n\n")
-
-            for line in out.split("\n"):
-                colored_print(line)
+            l = len(out.split("\n")) - 1
+            for i, line in enumerate(out.split("\n")):
+                if i < l:
+                    print(line)
+                else:
+                    colored_print(line)
 
     def get_var_names(self, frame=2):
         match frame:
@@ -991,14 +1008,5 @@ class VariableNameAndValuePrinter:
 
 varp = VariableNameAndValuePrinter()
 
-
-# colors = []
-
-# for d in varpFore.all_presets:
-#     nd = {}
-#     for (k, v) in d.items():
-#         if k != "value_rgb": nd[k] = v
-#         else: nd["value_rgb"] = v
-#     colors.append(nd)
-
-# pickle_pack(colors, varpFore.color_schemes_pickle)
+if __name__ == "__main__":
+    varp.show_formating_of_different_types()
