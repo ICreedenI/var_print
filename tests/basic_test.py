@@ -1,3 +1,3 @@
-import var_printer as v
+import var_print as v
 
 print(v.__version__)

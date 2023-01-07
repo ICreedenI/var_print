@@ -1,2 +1,0 @@
-executing
-colorful_terminal
