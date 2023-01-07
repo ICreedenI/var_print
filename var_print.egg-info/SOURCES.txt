@@ -1,0 +1,12 @@
+LICENSE
+MANIFEST.in
+README.md
+setup.py
+var_print/__init__.py
+var_print/varPrint.py
+var_print.egg-info/PKG-INFO
+var_print.egg-info/SOURCES.txt
+var_print.egg-info/dependency_links.txt
+var_print.egg-info/requires.txt
+var_print.egg-info/top_level.txt
+var_print/data/color_schemes.pickle
