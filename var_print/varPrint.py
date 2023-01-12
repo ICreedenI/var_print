@@ -250,7 +250,7 @@ class VariableNameAndValuePrinter:
         name_value_sep: str = " = ",
         comma: str = ", ",
         prefix: str = "",
-        iter_items_per_line: int = 10,
+        iter_items_per_line: int = 1,
         dict_items_per_line: int = 1,
         dict_alignment: str = "left",
         list_alignment: str = "left",
