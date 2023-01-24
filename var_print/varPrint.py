@@ -295,7 +295,10 @@ class VariableNameAndValuePrinter:
     def __call__(self, *vars) -> None:
         if not self.deactivated:
 
-            var_names = self.get_var_names()
+            try:
+                var_names = self.get_var_names()
+            except:
+                var_names = [f"{type(v)}" for v in vars]
 
             kwargs = {k: vars[i] for (i, k) in enumerate(var_names)}
 
@@ -1009,4 +1012,7 @@ class VariableNameAndValuePrinter:
 varp = VariableNameAndValuePrinter()
 
 if __name__ == "__main__":
-    varp.show_formating_of_different_types()
+    # varp.show_formating_of_different_types()
+
+    test = "test"
+    varp(test)
