@@ -39,7 +39,7 @@ setup(
     packages=find_packages(),
     package_data={"": ["var_printer/data/color_schemes.pickle"]},
     include_package_data=True,
-    install_requires=["executing", "colorful_terminal"],
+    install_requires=["executing", "colorful_terminal", "asttokens"],
     keywords=["python"],
     classifiers=[
         "Development Status :: 1 - Planning",
