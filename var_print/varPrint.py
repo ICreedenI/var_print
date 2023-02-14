@@ -393,7 +393,8 @@ class VariableNameAndValuePrinter:
 
         def format_nested_dicts(dicte: dict, indent, recursion_level):
             iipl = self.dict_items_per_line
-            max_kl = max([len(pformat(k)) for k in dicte.keys()])
+            # max_kl = max([len(pformat(k)) for k in dicte.keys()])
+            max_kl = max([len(self.format_value(k, 0)) for k in dicte.keys()])
 
             ide = indent * " "
             kide = indent + max_kl + len("{") + len(": ")
@@ -404,11 +405,15 @@ class VariableNameAndValuePrinter:
                 key_alignment = value_alignment = self.dict_alignment
 
             if key_alignment == "left":
-                jks = [pformat(k).ljust(max_kl) for k in dicte.keys()]
+                # jks = [pformat(k).ljust(max_kl) for k in dicte.keys()]
+                jks = [self.format_value(k, 0).ljust(max_kl) for k in dicte.keys()]
             elif key_alignment == "right":
-                jks = [pformat(k).rjust(max_kl) for k in dicte.keys()]
+                # jks = [pformat(k).rjust(max_kl) for k in dicte.keys()]
+                jks = [self.format_value(k, 0).rjust(max_kl) for k in dicte.keys()]
             else:
-                jks = [pformat(k) for k in dicte.keys()]
+                # jks = [pformat(k) for k in dicte.keys()]
+                jks = [self.format_value(k, 0) for k in dicte.keys()]
+
             max_vl = max(
                 [
                     len(self.format_value(v, kide, recursion_level))
