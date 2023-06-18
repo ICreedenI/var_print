@@ -518,7 +518,7 @@ class VariableNameAndValuePrinter:
                     )  # left
                     for (i, v) in enumerate(liste)
                 ]
-                jvs = {jvs[i]: type(v) for (i, v) in enumerate(liste)}
+                jvs = [(jvs[i], type(v)) for (i, v) in enumerate(liste)]
             if self.list_alignment == "right":
                 jvs = [
                     iter_colored_adjustment(
@@ -532,16 +532,15 @@ class VariableNameAndValuePrinter:
                     )  # right
                     for (i, v) in enumerate(liste)
                 ]
-                jvs = {jvs[i]: type(v) for (i, v) in enumerate(liste)}
+                jvs = [(jvs[i], type(v)) for (i, v) in enumerate(liste)]
             else:
                 jvs = [
                     self.format_value(v, kide, recursion_level)
                     + iter_comma_if_needed(i, len(liste))
                     for (i, v) in enumerate(liste)
                 ]
-                jvs = {jvs[i]: type(v) for (i, v) in enumerate(liste)}
+                jvs = [(jvs[i], type(v)) for (i, v) in enumerate(liste)]
 
-            # lstr = self.c_rgb + pref + k_auf + f"".join([f"{self.a_rgb}{v}{iters_new_line_if_needed(i, len(jvs), ide, iipl, k_auf, v_type)}" for (i, (v, v_type)) in enumerate(jvs.items())]) + self.c_rgb + k_zu
             lstr = (
                 self.c_rgb
                 + pref
@@ -549,7 +548,7 @@ class VariableNameAndValuePrinter:
                 + iter_join(
                     [
                         f"{self.a_rgb}{v}{iters_new_line_if_needed(i, len(jvs), ide, iipl, k_auf, v_type)}"
-                        for (i, (v, v_type)) in enumerate(jvs.items())
+                        for (i, (v, v_type)) in enumerate(jvs)
                     ]
                 )
                 + self.c_rgb
