@@ -49,6 +49,24 @@ def pickle_unpack(path):
     return data
 
 
+def get_var_names(*args):
+    frame = 1
+    if frame == 1:
+        callFrame = inspect.currentframe().f_back
+    elif frame == 2:
+        callFrame = inspect.currentframe().f_back.f_back
+    elif frame == 3:
+        callFrame = inspect.currentframe().f_back.f_back.f_back
+    else:
+        raise ValueError("frame geht nur bis 3")
+    callNode = Source.executing(callFrame).node
+    if callNode is None:
+        raise NoSourceAvailableError()
+    source = Source.for_frame(callFrame)
+    sanitizedArgStrs = [source.get_text_with_indentation(arg) for arg in callNode.args]
+    return sanitizedArgStrs
+
+
 class VarPrintColors:
     CYAN_YELLOW = {
         "name": "CYAN_YELLOW",
@@ -294,7 +312,6 @@ class VariableNameAndValuePrinter:
 
     def __call__(self, *vars) -> None:
         if not self.deactivated:
-
             try:
                 var_names = self.get_var_names()
             except:
