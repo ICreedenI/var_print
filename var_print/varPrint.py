@@ -315,15 +315,14 @@ class VariableNameAndValuePrinter:
                     colored_print(line)
 
     def get_var_names(self, frame=2):
-        match frame:
-            case 1:
-                callFrame = inspect.currentframe().f_back
-            case 2:
-                callFrame = inspect.currentframe().f_back.f_back
-            case 3:
-                callFrame = inspect.currentframe().f_back.f_back.f_back
-            case _:
-                raise ValueError("frame geht nur bis 3")
+        if frame == 1:
+            callFrame = inspect.currentframe().f_back
+        elif frame == 2:
+            callFrame = inspect.currentframe().f_back.f_back
+        elif frame == 3:
+            callFrame = inspect.currentframe().f_back.f_back.f_back
+        else:
+            raise ValueError("frame geht nur bis 3")
         callNode = Source.executing(callFrame).node
         if callNode is None:
             raise NoSourceAvailableError()
@@ -331,7 +330,6 @@ class VariableNameAndValuePrinter:
         sanitizedArgStrs = [
             source.get_text_with_indentation(arg) for arg in callNode.args
         ]
-
         return sanitizedArgStrs
 
     def format_value(self, value, indent, recursion_level: int = -1):
