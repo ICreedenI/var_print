@@ -500,6 +500,8 @@ class VariableNameAndValuePrinter:
                 k_auf, k_zu = "[", "]"
             elif type(liste) == tuple:
                 k_auf, k_zu = "(", ")"
+                if len(liste) == 1:
+                    k_zu = ",)"
             elif type(liste) == set:
                 k_auf, k_zu = "{", "}"
             elif type(liste) == frozenset:
@@ -1034,4 +1036,7 @@ if __name__ == "__main__":
     # varp.show_formating_of_different_types()
 
     test = "test"
+    test = ("test")
+    varp(test)
+    test = ("test",)
     varp(test)
