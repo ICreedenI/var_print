@@ -380,9 +380,9 @@ class VariableNameAndValuePrinter:
         def iter_colored_adjustment(
             colored_value: str,
             normal_value: str,
-            lenght: int | float,
-            index: int | float,
-            total_iter_len: int | float,
+            lenght: float,
+            index: float,
+            total_iter_len: float,
             left: bool,
             return_len: bool = False,
             k_auf: str = "[",
@@ -1086,7 +1086,7 @@ class VariableNameAndValuePrinter:
         return self._varname_rgb
 
     @varname_rgb.setter
-    def varname_rgb(self, value: tuple[int] | str):
+    def varname_rgb(self, value: tuple[int]):
         if type(value) == tuple or type(value) == str:
             if type(value) == tuple:
                 if not len(value) == 3:
@@ -1103,7 +1103,7 @@ class VariableNameAndValuePrinter:
         return self._name_value_sep_rgb
 
     @name_value_sep_rgb.setter
-    def name_value_sep_rgb(self, value: tuple[int] | str):
+    def name_value_sep_rgb(self, value: tuple[int]):
         if type(value) == tuple or type(value) == str:
             if type(value) == tuple:
                 if not len(value) == 3:
@@ -1120,7 +1120,7 @@ class VariableNameAndValuePrinter:
         return self._value_rgb
 
     @value_rgb.setter
-    def value_rgb(self, value: tuple[int] | str):
+    def value_rgb(self, value: tuple[int]):
         if type(value) == tuple or type(value) == str:
             if type(value) == tuple:
                 if not len(value) == 3:
@@ -1137,7 +1137,7 @@ class VariableNameAndValuePrinter:
         return self._comma_rgb
 
     @comma_rgb.setter
-    def comma_rgb(self, value: tuple[int] | str):
+    def comma_rgb(self, value: tuple[int]):
         if type(value) == tuple or type(value) == str:
             if type(value) == tuple:
                 if not len(value) == 3:
@@ -1154,7 +1154,7 @@ class VariableNameAndValuePrinter:
         return self._prefix_rgb
 
     @prefix_rgb.setter
-    def prefix_rgb(self, value: tuple[int] | str):
+    def prefix_rgb(self, value: tuple[int]):
         if type(value) == tuple or type(value) == str:
             if type(value) == tuple:
                 if not len(value) == 3:
@@ -1171,7 +1171,7 @@ class VariableNameAndValuePrinter:
         return self._dict_keys_rgb
 
     @dict_keys_rgb.setter
-    def dict_keys_rgb(self, value: tuple[int] | str):
+    def dict_keys_rgb(self, value: tuple[int]):
         if type(value) == tuple or type(value) == str:
             if type(value) == tuple:
                 if not len(value) == 3:
@@ -1188,7 +1188,7 @@ class VariableNameAndValuePrinter:
         return self._dict_vals_rgb
 
     @dict_vals_rgb.setter
-    def dict_vals_rgb(self, value: tuple[int] | str):
+    def dict_vals_rgb(self, value: tuple[int]):
         if type(value) == tuple or type(value) == str:
             if type(value) == tuple:
                 if not len(value) == 3:
@@ -1205,7 +1205,7 @@ class VariableNameAndValuePrinter:
         return self._dict_alignment
 
     @dict_alignment.setter
-    def dict_alignment(self, value: tuple[int] | str):
+    def dict_alignment(self, value: tuple[int]):
         if value not in ("left", "right", "none"):
             if not type(value) in (tuple, list):
                 if not len(value) == 2:
@@ -1223,7 +1223,7 @@ class VariableNameAndValuePrinter:
         return self._list_alignment
 
     @list_alignment.setter
-    def list_alignment(self, value: tuple[int] | str):
+    def list_alignment(self, value: tuple[int]):
         if value not in ("left", "right", "none"):
             raise ValueError(
                 f"list_alignment needs to be 'left' or 'right' or 'none' but not <{value}>"
