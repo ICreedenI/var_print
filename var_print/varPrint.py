@@ -304,6 +304,8 @@ class VariableNameAndValuePrinter:
         self.color_preset(color_preset)
         self.color_preset_index = varpFore.all_presets.index(color_preset)
 
+        self.print_mode = "standard"
+
     def activate(self):
         self.deactivated = False
 
@@ -330,6 +332,7 @@ class VariableNameAndValuePrinter:
                     print(line)
                 else:
                     colored_print(line)
+            return out
 
     def get_var_names(self, frame=2):
         if frame == 1:
@@ -356,6 +359,19 @@ class VariableNameAndValuePrinter:
                 return f"\n{ide}{k_auf_space}"
             elif v_type in (dict, list, tuple, set, GeneratorType, frozenset):
                 return f"\n{ide}{k_auf_space}"
+            elif index != total - 1:
+                return " "
+            else:
+                return ""
+
+        def iters_new_line_if_needed_experimental(
+            index, total, ide, iipl, k_auf, v_type=str
+        ):
+            # k_auf_space = " " * len(k_auf)
+            if (index + 1) % iipl == 0 and index != total - 1:
+                return f"\n{ide}"
+            elif v_type in (dict, list, tuple, set, GeneratorType, frozenset):
+                return f"\n{ide}"
             elif index != total - 1:
                 return " "
             else:
@@ -390,6 +406,16 @@ class VariableNameAndValuePrinter:
                 return f"{self.iv_rgb}{self.comma}"
             # if index != total-1 and colored: return f"{self.iv_rgb},"
             elif index != total - 1 and not colored:
+                return self.comma
+            # elif index != total-1 and not colored: return ","
+            else:
+                return ""
+
+        def iter_comma_if_needed_experimental(index, total, colored=True):
+            if colored:
+                return f"{self.iv_rgb}{self.comma}"
+            # if index != total-1 and colored: return f"{self.iv_rgb},"
+            elif not colored:
                 return self.comma
             # elif index != total-1 and not colored: return ","
             else:
@@ -492,7 +518,174 @@ class VariableNameAndValuePrinter:
 
             return dstr
 
+        def format_nested_dicts_experimental(dicte: dict, indent, recursion_level):
+            iipl = self.dict_items_per_line
+            max_kl = max([len(self.format_value(k, 0)) for k in dicte.keys()])
+
+            ide = 4 * (recursion_level + 1) * " "
+            kide = indent + max_kl + len("{") + len(": ")
+            k_auf = "{"
+            if len(self.dict_alignment) == 2:
+                key_alignment, value_alignment = self.dict_alignment
+            else:
+                key_alignment = value_alignment = self.dict_alignment
+
+            if key_alignment == "left":
+                # jks = [pformat(k).ljust(max_kl) for k in dicte.keys()]
+                jks = [self.format_value(k, 0).ljust(max_kl) for k in dicte.keys()]
+            elif key_alignment == "right":
+                # jks = [pformat(k).rjust(max_kl) for k in dicte.keys()]
+                jks = [self.format_value(k, 0).rjust(max_kl) for k in dicte.keys()]
+            else:
+                # jks = [pformat(k) for k in dicte.keys()]
+                jks = [self.format_value(k, 0) for k in dicte.keys()]
+
+            max_vl = max(
+                [
+                    len(self.format_value(v, kide, recursion_level))
+                    for v in dicte.values()
+                ]
+            )
+
+            if value_alignment == "left":
+                jvs = [
+                    iter_colored_adjustment(
+                        self.format_value(v, kide, recursion_level)
+                        + iter_comma_if_needed_experimental(i, len(dicte)),  # colored_value
+                        self.format_value(v, kide, recursion_level),  # normal_value
+                        max_vl,  # lenght
+                        i,  # index
+                        len(dicte),  # total_iter_len
+                        True,  # left # left
+                        False,  # return_len
+                        k_auf,
+                    )  # k_auf
+                    for (i, v) in enumerate(dicte.values())
+                ]
+            if value_alignment == "right":
+                jvs = [
+                    iter_colored_adjustment(
+                        self.format_value(v, kide, recursion_level)
+                        + iter_comma_if_needed_experimental(i, len(dicte)),  # colored_value
+                        self.format_value(v, kide, recursion_level),  # normal_value
+                        max_vl,  # lenght
+                        i,  # index
+                        len(dicte),  # total_iter_len
+                        False,  # right # left
+                        False,  # return_len
+                        k_auf,
+                    )  # k_auf
+                    for (i, v) in enumerate(dicte.values())
+                ]
+            else:
+                jvs = [
+                    self.format_value(v, kide, recursion_level)
+                    + iter_comma_if_needed_experimental(i, len(dicte))
+                    for (i, v) in enumerate(dicte.values())
+                ]
+
+            key_color = self.dk_rgb
+            val_color = self.dv_rgb
+
+            dstr = (
+                self.c_rgb
+                + "{\n"
+                + ide
+                + iter_join(
+                    [
+                        f"{key_color}{jks[i]}{self.c_rgb}: {val_color}{v}{iters_new_line_if_needed_experimental(i, len(jvs), ide, iipl, k_auf)}"
+                        for (i, v) in enumerate(jvs)
+                    ]
+                )
+                + self.c_rgb
+                + "\n" + recursion_level * 4 * " " + "}"
+            )
+
+            return dstr
+
         def format_nested_lists(liste: list, indent, recursion_level):
+            pref = ""
+            iipl = self.iter_items_per_line
+
+            if type(liste) == list:
+                k_auf, k_zu = "[", "]"
+            elif type(liste) == tuple:
+                k_auf, k_zu = "(", ")"
+                if len(liste) == 1:
+                    k_zu = ",)"
+            elif type(liste) == set:
+                k_auf, k_zu = "{", "}"
+            elif type(liste) == frozenset:
+                pref = "frozenset"
+                k_auf, k_zu = "({", "})"
+            elif type(liste) == GeneratorType:
+                pref = "generator"
+                k_auf, k_zu = "((", "))"
+                liste = tuple(liste)
+
+            ide = (indent + len(pref)) * " "
+            kide = indent + len(k_auf)
+
+            try:
+                max_vl = max(
+                    [len(self.format_value(v, kide, recursion_level)) for v in liste]
+                )
+            except:
+                max_vl = 0
+
+            if self.list_alignment == "left":
+                jvs = [
+                    iter_colored_adjustment(
+                        self.format_value(v, kide, recursion_level)
+                        + iter_comma_if_needed(i, len(liste)),
+                        self.format_value(v, kide, recursion_level),
+                        max_vl,
+                        i,
+                        len(liste),
+                        True,
+                    )  # left
+                    for (i, v) in enumerate(liste)
+                ]
+                jvs = [(jvs[i], type(v)) for (i, v) in enumerate(liste)]
+            if self.list_alignment == "right":
+                jvs = [
+                    iter_colored_adjustment(
+                        self.format_value(v, kide, recursion_level)
+                        + iter_comma_if_needed(i, len(liste)),
+                        self.format_value(v, kide, recursion_level),
+                        max_vl,
+                        i,
+                        len(liste),
+                        False,
+                    )  # right
+                    for (i, v) in enumerate(liste)
+                ]
+                jvs = [(jvs[i], type(v)) for (i, v) in enumerate(liste)]
+            else:
+                jvs = [
+                    self.format_value(v, kide, recursion_level)
+                    + iter_comma_if_needed(i, len(liste))
+                    for (i, v) in enumerate(liste)
+                ]
+                jvs = [(jvs[i], type(v)) for (i, v) in enumerate(liste)]
+
+            lstr = (
+                self.c_rgb
+                + pref
+                + k_auf
+                + iter_join(
+                    [
+                        f"{self.a_rgb}{v}{iters_new_line_if_needed(i, len(jvs), ide, iipl, k_auf, v_type)}"
+                        for (i, (v, v_type)) in enumerate(jvs)
+                    ]
+                )
+                + self.c_rgb
+                + k_zu
+            )
+
+            return lstr
+
+        def format_nested_lists_experimental(liste: list, indent, recursion_level):
             pref = ""
             iipl = self.iter_items_per_line
 
@@ -588,16 +781,24 @@ class VariableNameAndValuePrinter:
         elif type(value) in (list, tuple, set, GeneratorType, frozenset):
             try:
                 if len(value) != 0:
+                    # if self.print_mode == "experimental":
+                    #     return format_nested_lists_experimental(value, indent, recursion_level)
                     return format_nested_lists(value, indent, recursion_level)
                 else:
                     return pformat(value)
             except:
                 if len(tuple(value)) != 0:
+                    # if self.print_mode == "experimental":
+                    #     return format_nested_lists_experimental(value, indent, recursion_level)
                     return format_nested_lists(value, indent, recursion_level)
                 else:
                     return pformat(value)
         elif type(value) == dict:
             if len(value) != 0:
+                # if self.print_mode == "experimental":
+                #     return format_nested_dicts_experimental(
+                #         value, indent, recursion_level
+                #     )
                 return format_nested_dicts(value, indent, recursion_level)
             else:
                 return pformat(value)
@@ -1032,11 +1233,16 @@ class VariableNameAndValuePrinter:
 
 varp = VariableNameAndValuePrinter()
 
-if __name__ == "__main__":
-    # varp.show_formating_of_different_types()
 
-    test = "test"
-    test = ("test")
-    varp(test)
-    test = ("test",)
-    varp(test)
+if __name__ == "__main__":
+    varp.print_mode = "experimental"
+    # varp.show_formating_of_different_types()
+    dictionary_l2 = {"subdir": "level 2"}
+    a_dictionary = {"What": "a", "nice": "dictionary!", "Right?": "", "Subdir": dictionary_l2}
+    varp(a_dictionary)
+
+    # test = "test"
+    # test = "test"
+    # varp(test)
+    # test = ("test",)
+    # varp(test)
