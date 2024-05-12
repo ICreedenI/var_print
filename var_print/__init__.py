@@ -1,3 +1,3 @@
 from .varPrint import varp, varpFore, get_var_names
 
-__version__ = "0.0.8"
+__version__ = "0.0.9"

@@ -333,6 +333,27 @@ class VariableNameAndValuePrinter:
                 else:
                     colored_print(line)
             return out
+        
+    def get_formated_output(self, *vars, colored=None) -> None:
+        if colored != None:
+            prev_colored = self.colored
+            self.colored = colored
+        try:
+            var_names = self.get_var_names()
+        except:
+            var_names = [f"{type(v)}" for v in vars]
+
+        kwargs = {k: vars[i] for (i, k) in enumerate(var_names)}
+
+        if len(kwargs) > 0:
+            out = self.format_vars_and_args(kwargs)
+        else:
+            out = f"Testing varp: {Fore.CYAN} date and time: {Fore.get_rainbow_string(aktuelle_Zeit())}"
+
+        if colored != None:
+            self.colored = prev_colored
+
+        return out
 
     def get_var_names(self, frame=2):
         if frame == 1:
