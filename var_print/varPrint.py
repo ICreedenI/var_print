@@ -363,7 +363,7 @@ class VariableNameAndValuePrinter:
         elif frame == 3:
             callFrame = inspect.currentframe().f_back.f_back.f_back
         else:
-            raise ValueError("frame geht nur bis 3")
+            raise ValueError("max frame: 3")
         callNode = Source.executing(callFrame).node
         if callNode is None:
             raise NoSourceAvailableError()
