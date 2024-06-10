@@ -334,7 +334,7 @@ class VariableNameAndValuePrinter:
                     colored_print(line)
             return out
         
-    def get_formated_output(self, *vars, colored=False) -> None:
+    def get_formated_output(self, *vars, colored=False) -> str:
         if colored != None:
             prev_colored = self.colored
             self.colored = colored
