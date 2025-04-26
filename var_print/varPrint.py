@@ -791,7 +791,12 @@ class VariableNameAndValuePrinter:
         def format_string(string: str, indent):
             ide = " " * (indent + 1)
             string = f"\n{ide}".join(string.split("\n"))
-            return f"'{string}'"
+            if not "'" in string: out = f"'{string}'" 
+            elif not '"' in string: out = f'"{string}"'
+            else: 
+                s = string.replace("'", "\\'")
+                out = f"'{s}'" 
+            return out
 
         recursion_level += 1
 
@@ -1077,6 +1082,34 @@ class VariableNameAndValuePrinter:
                 pass
             liste.append(l1)
         varp(liste)
+
+    def append_output_to_file(self, *vars, filepath=None, ending: str = "\n"):
+        if not filepath:
+            filepath = inspect.stack()[1].filename 
+        print(filepath)
+
+        colored = False
+        if colored != None:
+            prev_colored = self.colored
+            self.colored = colored
+        try:
+            var_names = self.get_var_names()
+        except:
+            var_names = [f"{type(v)}" for v in vars]
+
+        kwargs = {k: vars[i] for (i, k) in enumerate(var_names)}
+
+        if len(kwargs) > 0:
+            out = self.format_vars_and_args(kwargs)
+        else:
+            out = f"Testing varp: {Fore.CYAN} date and time: {Fore.get_rainbow_string(aktuelle_Zeit())}"
+
+        if colored != None:
+            self.colored = prev_colored
+
+        out += ending
+        with open(filepath, "a", encoding="utf-8") as f:
+            f.write(out)
 
     @property
     def colored(self):
